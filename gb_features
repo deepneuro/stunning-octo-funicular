@@ -80,13 +80,12 @@ def create_location(sub_record,featu): #funcao que atribui um locus_tag a corres
             dic_loc[A]= Y
     return dic_loc
 
-###############  DA ERRO  ############### 
 def create_proteinID(sub_record,featu): #funcao que atribui um locus_tag a correspondente proteinID
     dic_protID = {}
     for i in featu:
         if not None:
             A = str(sub_record.features[i].qualifiers['locus_tag'][0])
-            B = str(sub_record.features[i].qualifiers['protein_id'][0])
+            B = str(sub_record.features[i].qualifiers.get('protein_id'))
             dic_protID[A] = B
         else:
             A = str(sub_record.features[i].qualifiers['locus_tag'][0])
