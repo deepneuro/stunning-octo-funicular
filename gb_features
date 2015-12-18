@@ -1,0 +1,199 @@
+'''
+Created on 13/12/2015
+
+@author: Emanuel
+'''
+
+from Bio import Entrez,Medline,SeqIO
+
+Entrez.email = 'ni.azevedo.s@gmail.com'
+
+#Fetching GenBank
+def create_record():
+    handler = Entrez.efetch(db="nucleotide", rettype="gbwithparts", retmode="text", id="NC_000919") #faz o fetch nas BD
+    seq_record = SeqIO.read(handler, "gb") #using "gb" as an alias for "genbank"
+    sub_record = seq_record[501800:639850] #seleciona a regiao do genoma a analisar
+    handler.close() #termina o fetch
+    return sub_record #retorna os dados em formato gb
+
+def save_record(sub_record):
+    try:
+        op = open(nome_ficheiro, 'r')
+        for nome in fp:
+            lo.append(nome)
+    except:
+        print("Erro no ficheiro.")
+    else:
+        fp.close()
+    return lo
+    
+def pos_features(sub_record):#regista as posicoes dos genes e CDS desejados consoante a regiao do genoma em estudo
+    featu = list() #cria uma lista vazia para implementar as features
+    for ft in range(len(sub_record.features)): #ciclo para correr todas as posicoes feature a feature
+        if sub_record.features[ft].type == "CDS" and "gene": #selecionar as features qualificadas de 'CDS' e 'gene'
+            featu.append(ft) #contem as posicoes de todas as features presentes em sub_records que foram filtradas por 'CDS' e 'gene'
+    return featu
+
+def ID(sub_record): #funcao para determinar o identificador para o genoma em estudo
+    ID = sub_record.id #seleciona o ID na sub_record
+    return ID
+
+def locus_tag(sub_record, featu): #funcao para determinar todos os locus_tag contidos na regiao em estudo
+    locus_tag = [] #lista vazia para colocar as locus_tag desejadas   
+    for u in featu: #ciclo que corre as posicoes que contem CDS e gene
+        C = str(sub_record.features[u].qualifiers['locus_tag'][0]) #atribui a variavel 'C' valor a valor de 'locus_tag'
+        locus_tag.append(C) #junta todos esses valores na variavel locus_tag
+    return locus_tag
+
+def create_features(sub_record, featu): #regista as posicoes dos genes e CDS desejados consoante a regiao do genoma em estudo
+    features = [] #lista vazia para colocar as features desejadas   
+    for i in featu: #ciclo que corre as posicoes que contem CDS e gene
+        D = str(sub_record.features[i]) #atribui a variavel 'C' valor a valor de 'features'
+        features.append(D) #junta todos esses valores na variavel locus_tag
+    return features
+
+def create_xref(sub_record,featu): #funcao que atribui um locus_tag a correspondente referencia de uma base de dados
+    dic_xref = {}
+    locus_tag = []
+    for i in featu:
+        if not None:
+            B = str(sub_record.features[i].qualifiers['db_xref'][0])
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            dic_xref[A] = B
+        else:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            Y = ' '
+            dic_xref[A]= Y
+    return dic_xref
+
+def create_location(sub_record,featu): #funcao que atribui um locus_tag a correspondente localizacao mais orientacao da strand
+    dic_loc = {}
+    locus_tag = []
+    for i in featu:
+        if not None:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            B = str(sub_record.features[i].location)
+            dic_loc[A] = B
+        else:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            Y = ' '
+            dic_loc[A]= Y
+    return dic_loc
+
+###############  DA ERRO  ############### 
+def create_proteinID(sub_record,featu): #funcao que atribui um locus_tag a correspondente proteinID
+    dic_protID = {}
+    for i in featu:
+        if not None:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            B = str(sub_record.features[i].qualifiers['protein_id'][0])
+            dic_protID[A] = B
+        else:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            Y = ' '
+            dic_protID[A]= Y
+    return dic_protID
+
+def create_product(sub_record,featu):#funcao que atribui um locus_tag a correspondente produto
+    dic_product = {}
+    for i in featu:
+        if not None:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            B = str(sub_record.features[i].qualifiers['product'][0])
+            dic_product[A] = B
+        else:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            Y = ' '
+            dic_product[A]= Y
+    return dic_product
+
+def create_note(sub_record,featu):#funcao que atribui um locus_tag a correspondente note
+    dic_note = {}
+    for i in featu:
+        if not None:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            B = str(sub_record.features[i].qualifiers['note'][0])
+            dic_note[A] = B
+        else:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            Y = ' '
+            dic_note[A]= Y
+    return dic_note
+
+###############  DA ERRO ###############    
+def create_translation(sub_record,featu):#funcao que atribui um locus_tag a correspondente note
+    dic_translation = {}
+    for i in featu:
+        if not None:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            B = str(sub_record.features[i].qualifiers['translation'][0])
+            dic_translation[A] = B
+        else:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            Y = ' '
+            dic_translation[A]= Y
+    return dic_translation
+
+def create_codonStart(sub_record,featu):#funcao que atribui um locus_tag ao correspondente codao inicial
+    dic_start = {}
+    for i in featu:
+        if not None:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            B = str(sub_record.features[i].qualifiers['codon_start'][0])
+            dic_start[A] = B
+        else:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            Y = ' '
+            dic_start[A]= Y
+    return dic_start
+
+def count_strand(sub_record,featu): #contagem de strands + e - para todos os locus_tag
+    plus = 0
+    minus = 0
+    for i in range(len(sub_record.features)):
+            if '(+)' in str(sub_record.features[i].location):
+                plus += 1
+            else:
+                minus += 1
+    print("Existem %i strands (+) e %i strands (-)" % (plus,minus))
+
+def strand(sub_record,featu):
+    dic_strand = {}
+    for i in range(len(sub_record.features)):
+            if '(+)' in str(sub_record.features[i].location):
+                A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+                dic_strand[A] = '(+)'
+            else:
+                A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+                dic_strand[A] = '(-)'
+    return dic_strand
+
+def tam(sub_record,featu):
+    dic_tam = {}
+    for i in featu:
+        if not None:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            B = str(len(sub_record.features[i].extract(sub_record.seq)))
+            dic_tam[A] = B
+        else:
+            A = str(sub_record.features[i].qualifiers['locus_tag'][0])
+            Y = ' '
+            dic_tam[A] = Y
+    return dic_tam
+
+def main():
+    #print("'%s' with '%i' features" % ((ID(create_record())), len((pos_features(create_record()))))) #Determina o ID do genoma e o tamanho de features da regiao do genoma em estudo
+    #print("Locus para a regiao TP_RS02345 a TP_RS02950 '%s' " % locus_tag(create_record(),pos_features(create_record()))) #apresenta todos os locus_tag pretendidos ('CDS' e 'gene')
+    #print(create_features(create_record(),pos_features(create_record())))
+    #print(create_xref(create_record(),pos_features(create_record())))
+    #print(create_location(create_record(),pos_features(create_record())))
+    #print(create_proteinID(create_record(),pos_features(create_record())))
+    #print(create_product(create_record(),pos_features(create_record())))
+    #print(create_note(create_record(),pos_features(create_record())))
+    #print(create_translation(create_record(),pos_features(create_record())))
+    #print(create_codonStart(create_record(),pos_features(create_record())))
+    #print(count_strand(create_record(),pos_features(create_record())))
+    #print(strand(create_record(),pos_features(create_record())))
+    #print(tam(create_record(),pos_features(create_record())))
+    
+main()
